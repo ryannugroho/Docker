@@ -40,7 +40,7 @@ def predict_status_gizi(umur, tinggi_badan, jenis_kelamin):
         2: 'Stunted',
         3: 'Tinggi'
     }
-    status_gizi = status_gizi_map.get(y_pred_label, 'Unknown')  # Menangani label yang tidak dikenal
+    status_gizi = status_gizi_map[y_pred_label]  # Menangani label yang tidak dikenal
 
     return status_gizi
 
