@@ -4,28 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prediksi Status Gizi</title>
+    <script>
+        // Fungsi untuk menangani form submission dan mengirim data menggunakan fetch
+        async function submitForm(event) {
+            event.preventDefault();  // Menghentikan form dari reload halaman
+
+            // Mengambil data dari form input
+            const umur = document.getElementById('umur').value;
+            const tinggiBadan = document.getElementById('tinggi_badan').value;
+            const jenisKelamin = document.getElementById('jenis_kelamin').value;
+
+            // Membuat objek JSON untuk dikirim ke API
+            const data = {
+                umur: parseInt(umur),  // Pastikan umur adalah integer
+                tinggi_badan: parseFloat(tinggiBadan),  // Pastikan tinggi badan adalah float
+                jenis_kelamin: jenisKelamin.toLowerCase()  // Ubah menjadi lowercase
+            };
+
+            try {
+                // Mengirimkan data menggunakan fetch ke API Flask
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                // Menangani respons dari API
+                const result = await response.json();
+                document.getElementById('result').innerText = `Prediksi Status Gizi: ${result.status_gizi}`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = 'Terjadi kesalahan, coba lagi nanti.';
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>Prediksi Status Gizi</h1>
 
-    <form method="POST">
+    <form onsubmit="submitForm(event)">
         <label for="umur">Umur (bulan):</label>
-        <input type="number" id="umur" name="umur" required><br><br>
+        <input type="number" id="umur" required><br><br>
 
         <label for="tinggi_badan">Tinggi Badan (cm):</label>
-        <input type="number" id="tinggi_badan" name="tinggi_badan" required><br><br>
+        <input type="number" id="tinggi_badan" required><br><br>
 
         <label for="jenis_kelamin">Jenis Kelamin:</label>
-        <select id="jenis_kelamin" name="jenis_kelamin" required>
+        <select id="jenis_kelamin" required>
             <option value="laki-laki">Laki-laki</option>
             <option value="perempuan">Perempuan</option>
         </select><br><br>
 
-        <input type="submit" value="Prediksi">
+        <button type="submit">Prediksi</button>
     </form>
 
-    {% if status_gizi %}
-    <h2>Prediksi Status Gizi: {{ status_gizi }}</h2>
-    {% endif %}
+    <h2 id="result"></h2>
 </body>
 </html>
