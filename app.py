@@ -2,13 +2,13 @@ from flask import Flask, jsonify, request
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-import tensorflow as tf  # Mengimpor fungsi untuk memuat model Keras
+from tensorflow.keras.models import load_model  # Mengimpor fungsi untuk memuat model Keras
 
 # Inisialisasi aplikasi Flask
 app = Flask(__name__)
 
 # Memuat model yang sudah dilatih sebelumnya
-model = tf.load_model('model_gizi.h5')  # Ganti dengan path model Anda
+model = load_model('model_gizi.h5')  # Ganti dengan path model Anda
 
 # Persiapkan scaler dan data pelatihan
 scaler = StandardScaler()
