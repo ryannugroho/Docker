@@ -2,15 +2,16 @@ from flask import Flask, jsonify, request
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-from tensorflow.keras.models import load_model  # Mengimpor fungsi untuk memuat model Keras
+from tensorflow.keras.models import load_model # Mengimpor fungsi untuk memuat model Keras
+from flask_cors import CORS
 
-# Inisialisasi aplikasi Flask
 app = Flask(__name__)
 
-# Memuat model yang sudah dilatih sebelumnya
-model = load_model('model_gizi.h5')  # Ganti dengan path model Anda
+CORS(app)
 
-# Persiapkan scaler dan data pelatihan
+# Memuat model yang sudah dilatih sebelumnya
+model = load_model('model_status_gizi.h5')
+
 scaler = StandardScaler()
 
 data_training = pd.read_csv('data_balita_bersih2.csv')
