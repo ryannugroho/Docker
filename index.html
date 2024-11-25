@@ -3,63 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediksi Status Gizi</title>
-    <script>
-        // Fungsi untuk menangani form submission dan mengirim data menggunakan fetch
-        async function submitForm(event) {
-            event.preventDefault();  // Menghentikan form dari reload halaman
-
-            // Mengambil data dari form input
-            const umur = document.getElementById('umur').value;
-            const tinggiBadan = document.getElementById('tinggi_badan').value;
-            const jenisKelamin = document.getElementById('jenis_kelamin').value;
-
-            // Membuat objek JSON untuk dikirim ke API
-            const data = {
-                umur: parseInt(umur),  // Pastikan umur adalah integer
-                tinggi_badan: parseFloat(tinggiBadan),  // Pastikan tinggi badan adalah float
-                jenis_kelamin: jenisKelamin.toLowerCase()  // Ubah menjadi lowercase
-            };
-
-            try {
-                // Mengirimkan data menggunakan fetch ke API Flask
-                const response = await fetch('http://127.0.0.1:5000/predict', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                });
-
-                // Menangani respons dari API
-                const result = await response.json();
-                document.getElementById('result').innerText = `Prediksi Status Gizi: ${result.status_gizi}`;
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('result').innerText = 'Terjadi kesalahan, coba lagi nanti.';
-            }
-        }
-    </script>
+    <title>Status Gizi Prediction</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Prediksi Status Gizi</h1>
+    <div class="container">
+        <h2 class="mt-5">Prediksi Status Gizi Balita</h2>
+        <form method="POST" action="/predict">
+            <div class="form-group">
+                <label for="umur">Umur (bulan)</label>
+                <input type="number" class="form-control" id="umur" name="umur" required>
+            </div>
+            <div class="form-group">
+                <label for="tinggi_badan">Tinggi Badan (cm)</label>
+                <input type="number" class="form-control" id="tinggi_badan" name="tinggi_badan" required>
+            </div>
+            <div class="form-group">
+                <label for="jenis_kelamin">Jenis Kelamin</label>
+                <select class="form-control" id="jenis_kelamin" name="jenis_kelamin" required>
+                    <option value="laki-laki">Laki-laki</option>
+                    <option value="perempuan">Perempuan</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Prediksi</button>
+        </form>
 
-    <form onsubmit="submitForm(event)">
-        <label for="umur">Umur (bulan):</label>
-        <input type="number" id="umur" required><br><br>
+        {% if prediction %}
+        <div class="mt-5">
+            <h3>Hasil Prediksi: <strong>{{ prediction }}</strong></h3>
+        </div>
+        {% endif %}
+    </div>
 
-        <label for="tinggi_badan">Tinggi Badan (cm):</label>
-        <input type="number" id="tinggi_badan" required><br><br>
-
-        <label for="jenis_kelamin">Jenis Kelamin:</label>
-        <select id="jenis_kelamin" required>
-            <option value="laki-laki">Laki-laki</option>
-            <option value="perempuan">Perempuan</option>
-        </select><br><br>
-
-        <button type="submit">Prediksi</button>
-    </form>
-
-    <h2 id="result"></h2>
+    <!-- Optional: Add JS for Bootstrap or any custom functionality -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
