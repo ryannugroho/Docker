@@ -19,8 +19,8 @@ data_training['Jenis Kelamin'] = data_training['Jenis Kelamin'].str.strip().str.
 data_training['Jenis Kelamin'] = data_training['Jenis Kelamin'].map({'laki-laki': 0, 'perempuan': 1})
 data_training['Jenis Kelamin'] = data_training['Jenis Kelamin'].fillna(-1)
 
-X_train = data_training[['Umur (bulan)', 'Jenis Kelamin', 'Tinggi Badan (cm)']]
-scaler.fit(X_train)
+X_train = []
+scaler.fit(X_train[['Umur (bulan)', 'Jenis Kelamin', 'Tinggi Badan (cm)']])
 
 # Fungsi untuk prediksi
 def predict_status_gizi(umur, tinggi_badan, jenis_kelamin):
