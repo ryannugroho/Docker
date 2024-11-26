@@ -3,41 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Status Gizi Prediction</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Prediksi Status Gizi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, select, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #007bff;
+        }
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h2 class="mt-5">Prediksi Status Gizi Balita</h2>
-        <form method="POST" action="/predict">
-            <div class="form-group">
-                <label for="umur">Umur (bulan)</label>
-                <input type="number" class="form-control" id="umur" name="umur" required>
-            </div>
-            <div class="form-group">
-                <label for="tinggi_badan">Tinggi Badan (cm)</label>
-                <input type="number" class="form-control" id="tinggi_badan" name="tinggi_badan" required>
-            </div>
-            <div class="form-group">
-                <label for="jenis_kelamin">Jenis Kelamin</label>
-                <select class="form-control" id="jenis_kelamin" name="jenis_kelamin" required>
-                    <option value="laki-laki">Laki-laki</option>
-                    <option value="perempuan">Perempuan</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Prediksi</button>
-        </form>
+    <h1>Prediksi Status Gizi</h1>
+    <form id="predictForm">
+        <label for="umur">Umur (bulan):</label><br>
+        <input type="number" id="umur" name="umur" required><br>
 
-        {% if prediction %}
-        <div class="mt-5">
-            <h3>Hasil Prediksi: <strong>{{ prediction }}</strong></h3>
-        </div>
-        {% endif %}
-    </div>
+        <label for="tinggi_badan">Tinggi Badan (cm):</label><br>
+        <input type="number" step="0.1" id="tinggi_badan" name="tinggi_badan" required><br>
 
-    <!-- Optional: Add JS for Bootstrap or any custom functionality -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <label for="jenis_kelamin">Jenis Kelamin:</label><br>
+        <select id="jenis_kelamin" name="jenis_kelamin" required>
+            <option value="laki-laki">Laki-laki</option>
+            <option value="perempuan">Perempuan</option>
+        </select><br>
+
+        <button type="submit">Prediksi</button>
+    </form>
+
+    <div id="result" class="result"></div>
+
+    <script>
+        document.getElementById('predictForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Mencegah reload halaman
+            
+            // Ambil nilai dari form
+            const umur = document.getElementById('umur').value;
+            const tinggi_badan = document.getElementById('tinggi_badan').value;
+            const jenis_kelamin = document.getElementById('jenis_kelamin').value;
+
+            // Kirim data ke API Flask
+            try {
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        umur: parseInt(umur),
+                        tinggi_badan: parseFloat(tinggi_badan),
+                        jenis_kelamin: jenis_kelamin
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Gagal mendapatkan hasil prediksi.');
+                }
+
+                const result = await response.json();
+
+                // Tampilkan hasil prediksi
+                if (result.status_gizi) {
+                    document.getElementById('result').innerHTML = 
+                        `Prediksi Status Gizi: <strong>${result.status_gizi}</strong>`;
+                } else if (result.error) {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `<span class="error">${error.message}</span>`;
+            }
+        });
+    </script>
 </body>
 </html>
