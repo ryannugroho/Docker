@@ -55,11 +55,17 @@
 <body>
     <h1>Prediksi Status Gizi</h1>
     <form id="predictForm">
-        <label for="umur">Umur (bulan):</label><br>
+        <label for="umur">Umur (tahun):</label><br>
         <input type="number" id="umur" name="umur" required><br>
 
         <label for="tinggi_badan">Tinggi Badan (cm):</label><br>
         <input type="number" step="0.1" id="tinggi_badan" name="tinggi_badan" required><br>
+
+        <label for="berat_badan">Berat Badan (kg):</label><br>
+        <input type="number" step="0.1" id="berat_badan" name="berat_badan" required><br>
+
+        <label for="lila">Lingkar Lengan Atas (cm):</label><br>
+        <input type="number" step="0.1" id="lila" name="lila" required><br>
 
         <label for="jenis_kelamin">Jenis Kelamin:</label><br>
         <select id="jenis_kelamin" name="jenis_kelamin" required>
@@ -79,6 +85,8 @@
             // Ambil nilai dari form
             const umur = document.getElementById('umur').value;
             const tinggi_badan = document.getElementById('tinggi_badan').value;
+            const berat_badan = document.getElementById('berat_badan').value;
+            const lila = document.getElementById('lila').value;
             const jenis_kelamin = document.getElementById('jenis_kelamin').value;
 
             // Kirim data ke API Flask
