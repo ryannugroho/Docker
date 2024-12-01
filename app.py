@@ -3,6 +3,7 @@ from flask_cors import CORS
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 
@@ -10,18 +11,17 @@ app = Flask(__name__)
 CORS(app)
 
 # Load model dan scaler
-model = load_model('model_status_gizi.h5')  # Pastikan file model.h5 ada di direktori yang sama
+model = load_model('model_status_gizi.keras')
 scaler = StandardScaler()
 
 # Load dan persiapkan data untuk fitting scaler
-data_training = pd.read_csv('https://raw.githubusercontent.com/ryannugroho/Docker/refs/heads/main/data_balita_bersih2.csv')
-data_training['Jenis Kelamin'] = data_training['Jenis Kelamin'].str.strip().str.lower()
-data_training['Jenis Kelamin'] = data_training['Jenis Kelamin'].map({'laki-laki': 0, 'perempuan': 1})
-data_training['Jenis Kelamin'] = data_training['Jenis Kelamin'].fillna(-1)
+data= pd.read_csv('https://raw.githubusercontent.com/ryannugroho/Docker/refs/heads/main/status_gizi_clean2.csv')
+label_encoder = LabelEncoder()
+data['JK'] = label_encoder.fit_transform(data['JK'])
 
 # Fit scaler dengan data pelatihan
-X_train = data_training[['Umur (bulan)', 'Jenis Kelamin', 'Tinggi Badan (cm)']]
-scaler.fit(X_train[['Umur (bulan)', 'Tinggi Badan (cm)', 'Jenis Kelamin']])
+X_train = data[['Usia', 'Berat', 'Tinggi', 'LiLA', 'JK']]
+scaler.fit(X_train[['Usia', 'Berat', 'Tinggi', 'LiLA', 'JK']])
 
 # Fungsi prediksi status gizi
 @app.route('/predict', methods=['POST'])
@@ -32,6 +32,8 @@ def predict():
         # Ambil input data
         umur = int(data['umur'])
         tinggi_badan = float(data['tinggi_badan'])
+        berat_badan = float(data['berat_badan'])
+        lila = float(data['lila'])
         jenis_kelamin = data['jenis_kelamin'].lower()
 
         # Map gender to numeric
@@ -42,7 +44,7 @@ def predict():
         jenis_kelamin_input = jenis_kelamin_map[jenis_kelamin]
 
         # Input data untuk prediksi
-        input_data = np.array([[umur, tinggi_badan, jenis_kelamin_input]])
+        input_data = np.array([[umur, tinggi_badan, berat_badan, lila, jenis_kelamin_input]])
 
         # Scaling input data
         input_data_scaled = scaler.transform(input_data)
@@ -58,10 +60,12 @@ def predict():
 
         # Pemetaan label ke status gizi
         status_gizi_map = {
-            0: 'Normal',
-            1: 'Severely Stunted',
-            2: 'Stunted',
-            3: 'Tinggi'
+            0: 'Gizi Baik',
+            1: 'Gizi Buruk',
+            2: 'Gizi Kurang',
+            3: 'Gizi Lebih',
+            4: 'Obesitas',
+            5: 'Resiko Gizi Lebih'
         }
         status_gizi = status_gizi_map.get(y_pred_label, 'Unknown')
 
