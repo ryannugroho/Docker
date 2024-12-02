@@ -55,20 +55,20 @@
 <body>
     <h1>Prediksi Status Gizi</h1>
     <form id="predictForm">
-        <label for="umur">Umur (tahun):</label><br>
-        <input type="number" id="umur" name="umur" required><br>
+        <label for="usia">Usia (tahun):</label><br>
+        <input type="number" id="usia" name="usia" required><br>
 
-        <label for="tinggi_badan">Tinggi Badan (cm):</label><br>
-        <input type="number" step="0.1" id="tinggi_badan" name="tinggi_badan" required><br>
+        <label for="tinggi">Tinggi Badan (cm):</label><br>
+        <input type="number" step="0.1" id="tinggi" name="tinggi" required><br>
 
-        <label for="berat_badan">Berat Badan (kg):</label><br>
-        <input type="number" step="0.1" id="berat_badan" name="berat_badan" required><br>
+        <label for="berat">Berat Badan (kg):</label><br>
+        <input type="number" step="0.1" id="berat" name="berat" required><br>
 
         <label for="lila">Lingkar Lengan Atas (cm):</label><br>
         <input type="number" step="0.1" id="lila" name="lila" required><br>
 
-        <label for="jenis_kelamin">Jenis Kelamin:</label><br>
-        <select id="jenis_kelamin" name="jenis_kelamin" required>
+        <label for="jk">Jenis Kelamin:</label><br>
+        <select id="jk" name="jk" required>
             <option value="laki-laki">Laki-laki</option>
             <option value="perempuan">Perempuan</option>
         </select><br>
@@ -83,11 +83,11 @@
             event.preventDefault(); // Mencegah reload halaman
             
             // Ambil nilai dari form
-            const umur = document.getElementById('umur').value;
-            const tinggi_badan = document.getElementById('tinggi_badan').value;
-            const berat_badan = document.getElementById('berat_badan').value;
+            const usia = document.getElementById('usia').value;
+            const tinggi = document.getElementById('tinggi').value;
+            const berat = document.getElementById('berat').value;
             const lila = document.getElementById('lila').value;
-            const jenis_kelamin = document.getElementById('jenis_kelamin').value;
+            const jk = document.getElementById('jk').value;
 
             // Kirim data ke API Flask
             try {
@@ -97,11 +97,11 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        umur: parseInt(umur),
-                        tinggi_badan: parseFloat(tinggi_badan),
-                        berat_badan: parseFloat(berat_badan),
+                        usia: parseInt(usia),
+                        tinggi: parseFloat(tinggi),
+                        berat: parseFloat(berat),
                         lila: parseFloat(lila),
-                        jenis_kelamin: jenis_kelamin
+                        jk: jk
                     }),
                 });
 
@@ -112,9 +112,9 @@
                 const result = await response.json();
 
                 // Tampilkan hasil prediksi
-                if (result.status_gizi) {
+                if (result.predicted_status_gizi) {
                     document.getElementById('result').innerHTML = 
-                        `Prediksi Status Gizi: <strong>${result.status_gizi}</strong>`;
+                        `Prediksi Status Gizi: <strong>${result.predicted_status_gizi}</strong>`;
                 } else if (result.error) {
                     throw new Error(result.error);
                 }
